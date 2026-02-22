@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国家認定級 猫屋敷ユキ 専門知識考査</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Noto Serif JP', serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .sans-serif {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .question-card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .option-label:hover {
+            background-color: #f1f5f9;
+        }
+        input[type="radio"]:checked + span {
+            font-weight: bold;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-8 lg:px-16">
+
+    <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-xl shadow-xl question-card border-t-8 border-gray-800">
+        <header class="text-center mb-10 border-b-2 border-gray-300 pb-6">
+            <h1 class="text-3xl md:text-4xl font-bold tracking-widest text-gray-900 mb-4">国家認定級 猫屋敷ユキ 専門知識考査</h1>
+            <p class="text-lg text-gray-600 sans-serif leading-relaxed">
+                本考査は、TVアニメーション『わんだふるぷりきゅあ！』の登場人物である「猫屋敷ユキ（キュアニャミー）」に関する極めて高度な専門知識を問うものである。<br>
+                全20問。各設問の指示に従い、最も客観的妥当性を有する選択肢を一つ選択せよ。
+            </p>
+        </header>
+
+        <form id="quiz-form" class="space-y-12">
+            <div id="quiz-content"></div>
+            
+            <div class="text-center pt-8 border-t-2 border-gray-300">
+                <button type="button" id="submit-btn" class="sans-serif bg-gray-800 hover:bg-gray-900 text-white font-bold py-4 px-12 rounded-full text-xl shadow-lg transition duration-300 transform hover:scale-105">
+                    答案を提出する
+                </button>
+            </div>
+        </form>
+
+        <div id="final-result-container" class="hidden mt-12 text-center p-8 bg-gray-50 rounded-lg border-2 border-gray-200">
+            <h2 class="text-3xl font-bold mb-4 text-gray-800">考査結果</h2>
+            <p id="score-display" class="text-2xl font-bold text-blue-800 mb-6"></p>
+            <p class="text-gray-600 sans-serif">各設問の下部に詳細な判定および深層解説が表示されています。採点結果と併せて確認してください。</p>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                id: 1,
+                question: "TVアニメーション『わんだふるぷりきゅあ！』において、猫屋敷ユキがキュアニャミーへの変身完了時に発声する規定の口上として、事実関係に完全合致するものを一つ選択せよ。",
+                options: [
+                    "「気高くかわいくきらめく世界！キュアニャミー！仕方ない、構ってあげる」",
+                    "「自由にかわいくきらめく世界！キュアニャミー！仕方ない、遊んであげる」",
+                    "「気高く美しく輝く世界！キュアニャミー！仕方ない、構ってあげる」",
+                    "上記のいずれでもない"
+                ],
+                answer: 0,
+                source: "東映アニメーション『わんだふるぷりきゅあ！』公式サイト キャラクター紹介",
+                explanation: "公式設定において、キュアニャミーの口上は「気高くかわいくきらめく世界！キュアニャミー！仕方ない、構ってあげる」と厳密に規定されている。他の選択肢は公式の文言に細微な改変を加えた偽証である。"
+            },
+            {
+                id: 2,
+                question: "猫屋敷ユキ（キュアニャミー）の生年月日設定に関し、公式媒体にて発表された誕生月日として客観的妥当性を有するものを選択せよ。",
+                options: [
+                    "2月22日",
+                    "12月21日",
+                    "9月29日",
+                    "11月11日"
+                ],
+                answer: 1,
+                source: "映画「わんだふるぷりきゅあ！ざ・むーびー！」公式サイト等のキャラクター誕生日設定",
+                explanation: "公式の誕生日設定は「12月21日」である。これは彼女が現在の飼い主である猫屋敷まゆと初めて出会った日であると考察される見解も存在するが、事実として12月21日が正当である。"
+            },
+            {
+                id: 3,
+                question: "猫屋敷ユキが現在の保護者兼パートナーである猫屋敷まゆと邂逅した際の初期状況に関して、映像資料上の事実関係に最も合致する記述を選択せよ。",
+                options: [
+                    "ペットショップにて売れ残っていたところを、まゆの強い希望により引き取られた。",
+                    "豪雨の日に公園の段ボール箱に遺棄されていたところを、通りかかったまゆに保護された。",
+                    "寒い山村の古民家の軒下にて野良猫として暮らしていた際、訪問したまゆと数日間を共にして心を開いた。",
+                    "まゆの母・すみれが経営する店舗の前に迷い込んできたところを保護され、そのまま居着いた。"
+                ],
+                answer: 2,
+                source: "テレビアニメ本編 第10話「ユキの中の思い出」",
+                explanation: "第10話において、寒い山村の古民家で薄汚れた状態で暮らしていた野良猫のユキが、訪れたまゆと触れ合い、心を開いて引き取られた経緯が詳細に描写されている。"
+            },
+            {
+                id: 4,
+                question: "猫屋敷ユキが人間態へと変身する能力を獲得した後、教育機関へ編入した際の所属学級に関する記述として正しいものを選択せよ。",
+                options: [
+                    "私立湾岸第二中学校 2年1組",
+                    "私立湾岸第一中学校 2年2組",
+                    "私立湾岸第三中学校 1年1組",
+                    "アニマルタウン公立中学校 2年1組"
+                ],
+                answer: 0,
+                source: "公式キャラクター設定資料",
+                explanation: "ユキは人間の姿を得た後、犬飼いろはや兎山悟らが通う「私立湾岸第二中学校 2年1組」に転校生として編入する手続きが取られている。"
+            },
+            {
+                id: 5,
+                question: "猫屋敷ユキの生理的または心理的な忌避対象（苦手とする事象）に関する以下の記述のうち、事実関係に合致するものを選択せよ。",
+                options: [
+                    "極度の高所恐怖症であり、木登りや高所からの跳躍を本能的に避ける傾向にある。",
+                    "突発的な騒音を極端に嫌悪し、特定の周波数の音波に対してパニック障害に似た反応を示す。",
+                    "柑橘類の香気成分を嗅ぐと、重度のアレルギー反応を呈する設定が公式に存在する。",
+                    "上記のいずれでもない。"
+                ],
+                answer: 3,
+                source: "公式キャラクター設定および劇中描写",
+                explanation: "公式設定および劇中描写において、ユキが明確に苦手とする対象は「水関係（お風呂や海など）」である。提示された選択肢1から3の事象はいずれも公式設定として存在しないため、「上記のいずれでもない」が正解となる。"
+            },
+            {
+                id: 6,
+                question: "猫屋敷ユキの嗜好品（大好物）として、作中描写および公式設定において明確に示されている水産物を選択せよ。",
+                options: [
+                    "鮪（マグロ）",
+                    "鰹（カツオ）",
+                    "鮭（サケ）",
+                    "鯖（サバ）"
+                ],
+                answer: 2,
+                source: "テレビアニメ本編および公式キャラクター豆知識",
+                explanation: "作中の描写および関連資料において、ユキの大好物は「鮭」であることが明示されている。"
+            },
+            {
+                id: 7,
+                question: "キュアニャミーが劇中においてその姿を初披露した話数と、猫屋敷まゆを守るために明確な変身プロセスを経て本格的に姿を現した話数の組み合わせとして、正しいものを選択せよ。",
+                options: [
+                    "初披露：第10話 ／ 本格変身：第15話",
+                    "初披露：第11話 ／ 本格変身：第17話",
+                    "初披露：第12話 ／ 本格変身：第18話",
+                    "初披露：第13話 ／ 本格変身：第20話"
+                ],
+                answer: 1,
+                source: "テレビアニメ本編 各話あらすじ",
+                explanation: "キュアニャミーは第11話の終盤において初めてその姿の断片を見せ、その後第17話にて、まゆをガルガルから守護するため、本格的な変身バンクシーンと共にその全貌を現した。"
+            },
+            {
+                id: 8,
+                question: "猫屋敷ユキが看板猫として滞在している、猫屋敷まゆの母・すみれが経営する店舗の名称として正しいものを選択せよ。",
+                options: [
+                    "Pretty Animal",
+                    "Pretty Holic",
+                    "Beauty Holic",
+                    "Wonderful Holic"
+                ],
+                answer: 1,
+                source: "東映アニメーション『わんだふるぷりきゅあ！』公式サイト",
+                explanation: "まゆの母・猫屋敷すみれが経営するコスメショップの名称は「Pretty Holic」である。同名称は過去のプリキュアシリーズ（『トロピカル〜ジュ！プリキュア』等）でも登場した作中ブランド名と共通している。"
+            },
+            {
+                id: 9,
+                question: "猫屋敷ユキが常時着用している装飾品に関する記述として、最も適切なものを選択せよ。",
+                options: [
+                    "犬飼いろはから贈られた、犬飼こむぎとお揃いのデザインのリボンを着用している。",
+                    "猫屋敷まゆが手作りした、特製のチャーム付き首輪を極めてお気に入りとして着用している。",
+                    "母・すみれが店舗の新作としてデザインした専用のチョーカーを着用している。",
+                    "ニコガーデンの統治者から授けられた、通信機能を持つ魔法のペンダントを着用している。"
+                ],
+                answer: 1,
+                source: "東映アニメーション『わんだふるぷりきゅあ！』公式サイト キャラクター紹介",
+                explanation: "ユキは「まゆに作ってもらった首輪のチャームがお気に入り」と公式に設定されており、このアイテムは彼女の誇り高さやまゆに対する強い愛着・執着を象徴する重要なプロップとなっている。"
+            },
+            {
+                id: 10,
+                question: "アニメーション本編における猫屋敷ユキ（キュアニャミー）の音響的演技（キャラクターボイス）を担当するキャストに関する記述として、客観的事実に合致するものを選択せよ。",
+                options: [
+                    "『わんだふるぷりきゅあ！』においてキュアリリアン役も兼任する上田麗奈氏が担当している。",
+                    "猫屋敷すみれ役を担当する斎藤千和氏が、特別演出として一人二役で担当している。",
+                    "犬飼こむぎ役の長縄まりあ氏が、音声加工技術を用いて担当している。",
+                    "上記のいずれでもない。"
+                ],
+                answer: 3,
+                source: "東映アニメーション『わんだふるぷりきゅあ！』公式サイト キャスト情報",
+                explanation: "猫屋敷ユキの担当声優は松田颯水氏である。選択肢1から3に挙げられたキャストはそれぞれ別のキャラクターを担当しており、いずれの記述も事実と反するため「上記のいずれでもない」が正当。"
+            },
+            {
+                id: 11,
+                question: "猫屋敷家の世帯構成に関する記述のうち、家長である父・猫屋敷貴行（たかゆき）の職業設定として正しいものを選択せよ。",
+                options: [
+                    "国際的な動物行動学の権威",
+                    "世界を飛び回る有名なカメラマン",
+                    "大手化粧品メーカーの代表取締役",
+                    "フリーランスの著名なイラストレーター"
+                ],
+                answer: 1,
+                source: "テレビアニメ本編および関連設定資料",
+                explanation: "猫屋敷家の家族構成において、父・貴行は「有名カメラマン」として設定されており、その職業柄、家を空けることが多い背景が描かれている。"
+            },
+            {
+                id: 12,
+                question: "猫屋敷ユキが人間態として活動する際の身体的・知的能力に関する客観的評価として、劇中描写に基づく最も妥当な記述を選択せよ。",
+                options: [
+                    "猫としての習性が色濃く残り、人間の文字を読み書きする等の高度な知的作業を行うことができない。",
+                    "運動神経は抜群であるが、人間社会の学力は極端に低く、学業成績は常に低迷している。",
+                    "兎山悟と同等に何でもこなすことができ、運動神経も極めて良好な文武両道である。",
+                    "人間としての基礎体力が不足しており、長時間の歩行や体育の授業に耐えられない。"
+                ],
+                answer: 2,
+                source: "アニメーション本編描写および設定資料",
+                explanation: "人間態のユキは、知識豊富な兎山悟と同等レベルで何でもこなせるハイスペックさを持ち、かつ運動神経も優れている「文武両道」のキャラクターとして描写されている。"
+            },
+            {
+                id: 13,
+                question: "キュアニャミーの戦闘時における戦術的特性として、最も合致する記述を選択せよ。",
+                options: [
+                    "敵を直接攻撃することは一切なく、専ら防御結界の展開と味方の治癒支援に徹する。",
+                    "素早くパンチやキックを繰り出す直接物理打撃を主体とし、結界（バリア）を併用して敵の攻撃を防護する。",
+                    "遠距離からの魔法的投射攻撃のみを主体とし、敵との近接格闘戦を極端に避ける。",
+                    "特殊な音波を用いた催眠誘導により、敵対生物の戦意を根底から喪失させる戦法を用いる。"
+                ],
+                answer: 1,
+                source: "アニメーション本編戦闘描写および解説資料",
+                explanation: "キュアニャミーは、犬組（ワンダフル・フレンディ）が回避を中心とするのに対し、「戦闘時には素早くパンチやキックを繰り出して、バリアでガルガルの攻撃を防ぐ」という直接的な物理打撃と防御を織り交ぜた実践的な戦闘スタイルを持つ。"
+            },
+            {
+                id: 14,
+                question: "過去のプリキュアシリーズ作品である『キラキラ☆プリキュアアラモード』の登場人物「キュアマカロン（琴爪ゆかり）」と、キュアニャミー（猫屋敷ユキ）の共通特性を比較した際、事実と相反する記述を一つ選択せよ。",
+                options: [
+                    "双方ともに「猫」を主要なデザインモチーフとしたプリキュアである。",
+                    "プリキュア形態における正式名称が、ともにカタカナ7文字で構成されている。",
+                    "変身前の氏名において、姓を除いた下の名前の第一音がともに「ゆ」から始まる。",
+                    "双方がパーソナルカラーとして「紫（パープル）」を主体とした意匠を持つ。"
+                ],
+                answer: 3,
+                source: "公式キャラクター設定",
+                explanation: "キュアマカロンは紫を基調とする（いわゆる紫キュア）が、キュアニャミーは白や水色を基調とした意匠である。したがって選択肢4が相反する記述（誤り）であり、本問の正解となる。"
+            },
+            {
+                id: 15,
+                question: "猫屋敷ユキが人間態として顕現した際の外見的特徴（デザイン仕様）に関する記述のうち、設定資料に完全に合致するものを選択せよ。",
+                options: [
+                    "頭髪は金髪（ブロンド）であり、後頭部で二つに結わえたツインテール形状をなしている。",
+                    "頭髪は赤みを帯びた茶褐色であり、顎のラインで切りそろえられたショートボブ形状をなしている。",
+                    "頭髪は漆黒のロングヘアであり、顔面には視力矯正用または装飾用の眼鏡を常時着用している。",
+                    "上記のいずれでもない。"
+                ],
+                answer: 3,
+                source: "公式キャラクターデザイン設定",
+                explanation: "人間態のユキは、銀色（グレー）を基調としたストレートのロングヘアと青い瞳を特徴とするデザインである。提示された選択肢1から3の特徴はすべて誤りであり、「上記のいずれでもない」が正当。"
+            },
+            {
+                id: 16,
+                question: "物語中盤において、猫屋敷ユキ（キュアニャミー）がニコガーデンの復旧活動や他のプリキュアとの共闘を強固に拒絶していた最大の理由として、最も適切な行動原理を選択せよ。",
+                options: [
+                    "犬飼こむぎに対する個人的な対立感情が原因であり、犬種全体に対する根深い偏見を有していたため。",
+                    "自身がプリキュアという超常的な存在である事実を、世間に露呈させるリスクを極端に嫌悪したため。",
+                    "猫屋敷まゆをガルガルとの遭遇等の危険事象から遠ざけ、彼女の平穏のみを絶対的に守護することに専念していたため。",
+                    "ニコガーデンの上位存在から直接、他者と交わらず単独行動を取るよう密命を受けていたため。"
+                ],
+                answer: 2,
+                source: "テレビアニメ本編 第18話等の台詞およびキャラクター考察",
+                explanation: "ユキの行動原理は一貫して「誰よりもまゆのことを大切に思っている」ことに起因する。まゆが危険な目に遭うことを極度に恐れ、彼女を巻き込まないために他者との共闘や戦いへの関与を拒絶していた。"
+            },
+            {
+                id: 17,
+                question: "猫屋敷ユキの、兎山悟と犬飼いろは間に存在する関係性（恋愛模様）に対するスタンスとして、客観的に観察される行動傾向を選択せよ。",
+                options: [
+                    "悟の恋心を積極的にいろはへ暴露し、事態の急展開を画策する過干渉な態度をとる。",
+                    "両者の関係に一切の興味を示さず、自身の生活圏域外の事象として完全に黙殺する態度を貫く。",
+                    "悟の恋愛感情を察知しつつも過度な干渉は避け、必要最低限のフォローを行うにとどめている。",
+                    "いろはに対して、学習環境の悪化を理由に悟との交際を強く禁止するよう忠告を行う。"
+                ],
+                answer: 2,
+                source: "アニメーション本編描写および設定資料",
+                explanation: "ユキは悟といろはの恋愛関係に関して、無関心ではないものの直接的な介入は避け、必要最低限のフォローや気遣いを見せるという、自立した猫らしい適切な距離感を持った接し方をしている。"
+            },
+            {
+                id: 18,
+                question: "第17話において、猫屋敷ユキが猫屋敷まゆを守るためにキュアニャミーへと変身する際、その精神的決意を表明した規定の台詞として正確なものを選択せよ。",
+                options: [
+                    "「まゆは私の全て。だから、絶対に傷つけさせない！」",
+                    "「その優しさのせいで傷ついてしまうなら… わたしがあなたを守る！」",
+                    "「ニコガーデンの平和は私が取り戻す！まゆのためにも！」",
+                    "「気高くかわいく、あなたを排除するわ！」"
+                ],
+                answer: 1,
+                source: "テレビアニメ本編 第17話",
+                explanation: "ガルガルからカルガモの雛を助けようとして危機に陥ったまゆに対し、彼女の本来持つ優しい心を守護するため、「その優しさのせいで傷ついてしまうなら… わたしがあなたを守る！」という悲壮かつ力強い台詞と共に変身を遂げた。"
+            },
+            {
+                id: 19,
+                question: "放送展開において、作中における猫屋敷ユキの本来の性格・言動と、関連玩具『おしゃべりユキちゃん』等に収録された音声仕様との間に生じた差異について、ファンコミュニティ等で指摘された事象として最も妥当なものを選択せよ。",
+                options: [
+                    "玩具では関西地方の方言を模した音声仕様となっていた。",
+                    "玩具では語尾に「にゃ」を付与するなど、実際の誇り高いキャラクター性とは相反するステレオタイプな猫語の音声が収録されていた。",
+                    "玩具では犬飼こむぎを「親友」と呼称する、本来の孤高な設定に反する音声が収録されていた。",
+                    "玩具では一人称が「僕」に設定されていた。"
+                ],
+                answer: 1,
+                source: "アニヲタWiki（仮）等における作品考察",
+                explanation: "放送初期に展開された玩具等では、実際のユキのクールで誇り高い性格とは裏腹に、過剰に猫らしい喋り方（語尾に「にゃ」を付ける等）が収録されており、劇中描写との明確な乖離が存在した。"
+            },
+            {
+                id: 20,
+                question: "『わんだふるぷりきゅあ！』最終回（第50話）における猫屋敷ユキの最終的な動向および結末に関する記述として、放送された事実に合致するものを選択せよ。",
+                options: [
+                    "ニコガーデンの次期統治者としての指名を受諾し、アニマルタウンを恒久的に退去した。",
+                    "特殊な呪いの影響により猫の姿から永久に人間の姿へと固定化され、元の生物学的形態への可逆性を喪失した。",
+                    "犬飼こむぎと共に、国際的な動物保護活動を推進するため世界巡礼の旅に出立した。",
+                    "上記のいずれでもない。"
+                ],
+                answer: 3,
+                source: "テレビアニメ本編 第50話（最終回）あらすじおよび描写",
+                explanation: "第50話において、ユキはアニマルタウンにて猫屋敷まゆとの平穏な日常を継続している。統治者への即位、形態の不可逆的固定、世界旅行への出立といった事象は一切描かれておらず、全選択肢が虚偽であるため「上記のいずれでもない」が正解となる。"
+            }
+        ];
+
+        const quizContent = document.getElementById('quiz-content');
+        const submitBtn = document.getElementById('submit-btn');
+        const finalResultContainer = document.getElementById('final-result-container');
+        const scoreDisplay = document.getElementById('score-display');
+
+        // Render Quiz
+        quizData.forEach((quiz, index) => {
+            const questionBox = document.createElement('div');
+            questionBox.className = 'p-6 md:p-8 bg-white border border-gray-200 rounded-lg shadow-sm';
+            questionBox.id = `question-box-${index}`;
+
+            const questionTitle = document.createElement('h3');
+            questionTitle.className = 'text-xl font-bold mb-4 text-gray-800 leading-relaxed';
+            questionTitle.innerHTML = `<span class="text-blue-800 mr-2">問 ${index + 1}.</span>${quiz.question}`;
+            questionBox.appendChild(questionTitle);
+
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'space-y-3 pl-2 md:pl-8 sans-serif';
+
+            quiz.options.forEach((option, oIndex) => {
+                const label = document.createElement('label');
+                label.className = 'option-label flex items-start p-3 border rounded cursor-pointer transition';
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `question-${index}`;
+                radio.value = oIndex;
+                radio.className = 'mt-1 mr-4 w-5 h-5 text-blue-600 focus:ring-blue-500 cursor-pointer';
+
+                const span = document.createElement('span');
+                span.className = 'text-gray-700 leading-relaxed';
+                span.textContent = option;
+
+                label.appendChild(radio);
+                label.appendChild(span);
+                optionsContainer.appendChild(label);
+            });
+
+            questionBox.appendChild(optionsContainer);
+
+            // Result explanation container (hidden initially)
+            const resultBox = document.createElement('div');
+            resultBox.id = `result-${index}`;
+            resultBox.className = 'hidden mt-6 p-5 rounded border';
+            questionBox.appendChild(resultBox);
+
+            quizContent.appendChild(questionBox);
+        });
+
+        // Handle Submission
+        submitBtn.addEventListener('click', () => {
+            let score = 0;
+            let answeredAll = true;
+
+            quizData.forEach((quiz, index) => {
+                const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+                const resultBox = document.getElementById(`result-${index}`);
+                const questionBox = document.getElementById(`question-box-${index}`);
+                
+                if (!selectedOption) {
+                    answeredAll = false;
+                    questionBox.classList.add('border-red-400', 'bg-red-50');
+                    setTimeout(() => {
+                        questionBox.classList.remove('border-red-400', 'bg-red-50');
+                    }, 2000);
+                    return;
+                }
+
+                const userAnswer = parseInt(selectedOption.value);
+                const isCorrect = userAnswer === quiz.answer;
+
+                if (isCorrect) score++;
+
+                // Disable inputs
+                const inputs = document.querySelectorAll(`input[name="question-${index}"]`);
+                inputs.forEach(input => input.disabled = true);
+
+                // Styling result box
+                resultBox.classList.remove('hidden');
+                resultBox.classList.add(isCorrect ? 'bg-green-50' : 'bg-red-50', isCorrect ? 'border-green-300' : 'border-red-300');
+                
+                const statusHtml = isCorrect 
+                    ? `<span class="text-green-700 font-bold text-lg mb-2 block">✓ 正解</span>` 
+                    : `<span class="text-red-700 font-bold text-lg mb-2 block">✗ 誤答 (正解: 選択肢 ${quiz.answer + 1})</span>`;
+
+                resultBox.innerHTML = `
+                    ${statusHtml}
+                    <div class="text-sm text-gray-800 sans-serif space-y-2 mt-3">
+                        <p><strong class="text-gray-900">【根拠】</strong> ${quiz.source}</p>
+                        <p><strong class="text-gray-900">【深層解説】</strong> ${quiz.explanation}</p>
+                    </div>
+                `;
+            });
+
+            if (!answeredAll) {
+                alert("未回答の設問が存在します。全問回答後に再度提出してください。");
+                return;
+            }
+
+            // Show final result
+            submitBtn.classList.add('hidden');
+            finalResultContainer.classList.remove('hidden');
+            
+            let evaluation = "";
+            if(score === 20) evaluation = "完璧です。あなたは猫屋敷ユキに関する最高峰の知識を有する特級専門家です。";
+            else if(score >= 15) evaluation = "極めて優秀な成績です。高度な専門知識を有しています。";
+            else if(score >= 10) evaluation = "標準以上の知識を有していますが、さらに深い公式資料の精読が推奨されます。";
+            else evaluation = "基礎からの再学習が強く推奨されます。公式設定および放送内容の再確認を行ってください。";
+
+            scoreDisplay.innerHTML = `得点: ${score} / 20 <br><span class="text-lg font-normal text-gray-700 mt-2 block">${evaluation}</span>`;
+            
+            // Scroll to top of results
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
